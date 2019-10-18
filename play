@@ -1,0 +1,61 @@
+#!/bin/bash
+
+if [ "$CONDA_DEFAULT_ENV" != "opencv" ]; then
+    source activate opencv
+
+    if [ $? != 0 ]; then
+        echo "Check the virtual environment"
+        exit 1
+    fi
+fi
+
+_DIR='/Volumes/ExtendedHD/training/opencv'
+_PY_EXEC=$(which python3)
+
+cd $_DIR
+
+while [ -n "$1" ]; do # while loop starts
+    case "$1" in
+        new)
+            if [ "$2" == "" ]; then
+                echo "Error: A name is needed for the new exercise"
+                exit 2
+            fi
+            echo "New training exercise on $2"
+            mkdir $2
+            vi $2/app.py
+	    exit $?
+	    ;;
+        modify)
+            if [ "$2" == "" ]; then
+                echo "Error: Please provide a valid exercise name"
+                exit 2
+            fi
+            echo "Opening exercise '$2'"
+            vi $2/app.py
+	    exit $?
+	    ;;
+        run)
+            if [ "$2" == "" ]; then
+                echo "Error: Please provide a valid exercise name"
+                exit 2
+            fi
+            $_PY_EXEC $2/app.py
+	    exit $?
+	    ;;
+	*)
+            echo "Unknown action"
+	    echo "Usage: $0 [action] exercise_name"
+	    echo "Actions:"
+	    echo "    new:     Create a new exercise"
+	    echo "    modify:  Modify an exercise"
+	    echo "    run:     Execute the exercise"
+	    echo "Error codes:"
+	    echo "    1:  When the virtual environment cannot be loaded"
+	    echo "    2:  When the excercise name is missing"
+	    echo "    3:  Whan an unknown parameter is passing"
+	    exit 3
+	    ;;
+    esac
+    shift
+done
